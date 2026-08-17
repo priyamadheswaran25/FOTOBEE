@@ -50,7 +50,7 @@ export const AdminPortfolios: React.FC = () => {
     if (!file) return;
     setUploading(true);
     try {
-      const res = await api.uploadFile(file);
+      const res = await api.uploadFile(file, 'portfolio');
       if (res.success && res.data.url) {
         setFormData({ ...formData, image_path: res.data.url });
         toast.success('Image file uploaded successfully!');

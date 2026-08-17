@@ -115,18 +115,20 @@ export const api = {
   updateAdminConfig: (data: any) => apiFetch<{ success: boolean; data: any }>('/admin/config', { method: 'PUT', body: JSON.stringify(data) }),
 
   // Upload File
-  uploadImage: async (file: File) => {
+  uploadImage: async (file: File, module?: string) => {
     const formData = new FormData();
     formData.append('image', file);
-    return apiFetch<{ success: boolean; data: { url: string } }>('/admin/upload', {
+    const url = module ? `/admin/upload?module=${module}` : '/admin/upload';
+    return apiFetch<{ success: boolean; data: { url: string } }>(url, {
       method: 'POST',
       body: formData,
     });
   },
-  uploadFile: async (file: File) => {
+  uploadFile: async (file: File, module?: string) => {
     const formData = new FormData();
     formData.append('image', file);
-    return apiFetch<{ success: boolean; data: { url: string } }>('/admin/upload', {
+    const url = module ? `/admin/upload?module=${module}` : '/admin/upload';
+    return apiFetch<{ success: boolean; data: { url: string } }>(url, {
       method: 'POST',
       body: formData,
     });

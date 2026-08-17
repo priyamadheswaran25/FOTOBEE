@@ -62,8 +62,8 @@ export const AdminServices: React.FC = () => {
     if (!file) return;
     setUploading(true);
     try {
-      const res = await api.uploadFile(file);
-      if (res.success && res.data.url) {
+      const res = await api.uploadFile(file, 'services');
+      if (res.success) {
         setFormData({ ...formData, icon: res.data.url });
         toast.success('Service icon/image uploaded!');
       }
