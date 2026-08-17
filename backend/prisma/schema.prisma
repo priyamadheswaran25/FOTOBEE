@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id             String   @id @default(uuid())
+  slug           String   @unique
+  name_en        String
+  name_ta        String?
+  description_en String?
+  description_ta String?
+  order_index    Int      @default(0)
+  image_url      String?
+  created_at     DateTime @default(now())
+
+  stories    Story[]
+  portfolios Portfolio[]
+}
+
+model Service {
+  id             String  @id @default(uuid())
+  slug           String  @unique
+  name_en        String
+  name_ta        String?
+  description_en String
+  description_ta String?
+  image_path     String
+  is_active      Boolean @default(true)
+  order_index    Int
+}
+
+model Package {
+  id             String  @id @default(uuid())
+  slug           String  @unique
+  name_en        String
+  name_ta        String?
+  subtitle_en    String
+  subtitle_ta    String?
+  description_en String
+  description_ta String?
+  is_popular     Boolean @default(false)
+  is_active      Boolean @default(true)
+  order_index    Int
+
+  features  PackageFeature[]
+  inquiries Inquiry[]
+}
+
+model PackageFeature {
+  id          String  @id @default(uuid())
+  package_id  String
+  feature_en  String
+  feature_ta  String?
+  order_index Int
+
+  package Package @relation(fields: [package_id], references: [id], onDelete: Cascade)
+}
+
+model Story {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  category_id     String
+  name_en         String
+  name_ta         String?
+  title_en        String
+  title_ta        String?
+  subtitle_en     String
+  subtitle_ta     String?
+  location_en     String
+  location_ta     String?
+  event_date      DateTime @db.Date
+  hero_image_path String
+  quote_en        String
+  quote_ta        String?
+  is_active       Boolean  @default(true)
+
+  category Category @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
+  sections StorySection[]
+
+  relatedFrom StoryRelated[] @relation("StoryRelatedFrom")
+  relatedTo   StoryRelated[] @relation("StoryRelatedTo")
+}
+
+model StoryRelated {
+  story_id         String
+  related_story_id String
+
+  story        Story @relation("StoryRelatedFrom", fields: [story_id], references: [id], onDelete: Cascade)
+  relatedStory Story @relation("StoryRelatedTo", fields: [related_story_id], references: [id], onDelete: Cascade)
+
+  @@id([story_id, related_story_id])
+}
+
+enum LayoutType {
+  FULL_WIDTH     @map("full-width")
+  SIDE_BY_SIDE   @map("side-by-side")
+  LANDSCAPE_TEXT @map("landscape-text")
+}
+
+model StorySection {
+  id             String     @id @default(uuid())
+  story_id       String
+  title_en       String
+  title_ta       String?
+  description_en String?
+  description_ta String?
+  layout_type    LayoutType
+  order_index    Int
+
+  story  Story               @relation(fields: [story_id], references: [id], onDelete: Cascade)
+  images StorySectionImage[]
+}
+
+model StorySectionImage {
+  id          String  @id @default(uuid())
+  section_id  String
+  image_path  String
+  caption_en  String?
+  caption_ta  String?
+  order_index Int
+
+  section StorySection @relation(fields: [section_id], references: [id], onDelete: Cascade)
+}
+
+model Testimonial {
+  id             String  @id @default(uuid())
+  client_name_en String
+  client_name_ta String?
+  event_type_en  String
+  event_type_ta  String?
+  location_en    String
+  location_ta    String?
+  review_en      String
+  review_ta      String?
+  rating         Int     @default(5)
+  avatar_path    String
+  is_active      Boolean @default(true)
+}
+
+model Portfolio {
+  id          String  @id @default(uuid())
+  category_id String
+  image_path  String
+  caption_en  String?
+  caption_ta  String?
+  order_index Int
+  is_active   Boolean @default(true)
+
+  category Category @relation(fields: [category_id], references: [id], onDelete: Restrict)
+}
+
+enum InquiryStatus {
+  New
+  Contacted
+  Closed
+}
+
+model Inquiry {
+  id           String        @id @default(uuid())
+  full_name    String
+  phone        String
+  email        String
+  event_type   String
+  event_date   DateTime      @db.Date
+  location     String
+  budget_range String?
+  message      String?
+  package_id   String?
+  status       InquiryStatus @default(New)
+  created_at   DateTime      @default(now())
+
+  package Package? @relation(fields: [package_id], references: [id], onDelete: SetNull)
+}
+
+model SiteConfig {
+  id                  String  @id @default("global")
+  email               String
+  phone               String
+  whatsapp_number     String
+  whatsapp_message_en String
+  address_en          String
+  address_ta          String?
+  instagram_url       String?
+  facebook_url        String?
+  youtube_url         String?
+}
+
+model SiteStat {
+  id          String  @id @default(uuid())
+  value       Int
+  label_en    String
+  label_ta    String?
+  suffix      String?
+  order_index Int
+}
+
+model AdminUser {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
