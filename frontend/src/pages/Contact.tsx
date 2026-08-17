@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Phone, MessageSquare, Send, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { siteConfig } from "../data/siteConfig";
+import { siteConfig as staticConfig } from "../data/siteConfig";
+import { api } from "../services/api";
 import { SectionHeading } from "../components/Common/SectionHeading";
 import { useToast } from "../context/ToastContext";
 
@@ -46,6 +47,13 @@ export const Contact: React.FC = () => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [config, setConfig] = useState<any>(staticConfig);
+
+  useEffect(() => {
+    api.getConfig().then(res => {
+      if (res) setConfig(res);
+    });
+  }, []);
 
   // Read state passed from package redirects or stories
   useEffect(() => {
@@ -135,7 +143,7 @@ export const Contact: React.FC = () => {
   const encodedMsg = encodeURIComponent(
     `Hi Footbee Photography, my name is ${formData.fullName || "there"}. I would like to check availability for ${formData.eventType} on ${formData.eventDate || "my event date"} at ${formData.location || "my location"}.`
   );
-  const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.number}?text=${encodedMsg}`;
+  const whatsappUrl = `https://wa.me/${config.whatsapp.number}?text=${encodedMsg}`;
 
   return (
     <div className="w-full pt-28 pb-20 bg-cream relative paper-texture">
@@ -386,7 +394,7 @@ export const Contact: React.FC = () => {
 
               <div className="space-y-4">
                 <a
-                  href={`tel:${siteConfig.phone.replace(/\s+/g, '')}`}
+                  href={`tel:${config.phone.replace(/\s+/g, '')}`}
                   className="w-full py-3.5 border border-charcoal/20 text-charcoal bg-transparent hover:bg-charcoal hover:text-cream transition-colors duration-300 flex items-center justify-center space-x-2 text-xs tracking-[0.15em] font-semibold"
                 >
                   <Phone className="w-4 h-4" />

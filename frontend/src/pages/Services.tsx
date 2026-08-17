@@ -16,78 +16,14 @@ import { api } from "../services/api";
 
 export const Services: React.FC = () => {
   
-  const [servicesList, setServicesList] = React.useState([
-    {
-      id: "traditional-photography",
-      slug: "traditional-photography",
-      title: "Traditional Photography",
-      description: "Capture every important moment with timeless, detailed photographs that beautifully preserve your special occasions and memories.",
-      icon: Camera,
-      bgTone: "bg-terracotta/10 text-terracotta"
-    },
-    {
-      id: "traditional-videography",
-      slug: "traditional-videography",
-      title: "Traditional Videography",
-      description: "Relive your memorable moments through professionally recorded videos that capture the complete flow, emotions, and highlights of your event.",
-      icon: Video,
-      bgTone: "bg-mud/15 text-mud"
-    },
-    {
-      id: "candid-photography",
-      slug: "candid-photography",
-      title: "Candid Photography",
-      description: "Natural emotions, genuine smiles, and unexpected moments—our candid photography captures your special memories as they truly happen.",
-      icon: Heart,
-      bgTone: "bg-sand-dark/15 text-charcoal"
-    },
-    {
-      id: "candid-videography",
-      slug: "candid-videography",
-      title: "Candid Videography",
-      description: "Experience your special moments all over again with cinematic candid videos that focus on real emotions, natural interactions, and unforgettable memories.",
-      icon: Film,
-      bgTone: "bg-terracotta/10 text-terracotta"
-    },
-    {
-      id: "drone-videography",
-      slug: "drone-videography",
-      title: "Drone Videography",
-      description: "Get a stunning aerial perspective of your event, location, and celebrations with professional drone videography that adds a cinematic touch to your memories.",
-      icon: Plane,
-      bgTone: "bg-mud/15 text-mud"
-    },
-    {
-      id: "street-photography",
-      slug: "street-photography",
-      title: "Street Photography",
-      description: "Explore everyday life through authentic frames. Our street photography captures people, places, culture, emotions, and spontaneous moments.",
-      icon: MapPin,
-      bgTone: "bg-sand-dark/15 text-charcoal"
-    },
-    {
-      id: "festival-photography",
-      slug: "festival-photography",
-      title: "Festival Photography",
-      description: "Capture the colours, traditions, celebrations, emotions, and vibrant atmosphere of festivals with beautifully detailed photography.",
-      icon: Sparkles,
-      bgTone: "bg-terracotta/10 text-terracotta"
-    },
-    {
-      id: "travel-photography",
-      slug: "travel-photography",
-      title: "Travel Photography",
-      description: "Turn your journeys into lasting visual stories. We capture landscapes, people, culture, destinations, and memorable experiences throughout your travels.",
-      icon: Compass,
-      bgTone: "bg-mud/15 text-mud"
-    }
-  ]);
+  const [servicesList, setServicesList] = React.useState<any[]>([]);
+
 
   React.useEffect(() => {
     async function fetchServices() {
       try {
         const res = await api.getServices();
-        if (Array.isArray(res) && res.length > 0) {
+        if (Array.isArray(res)) {
           const iconMap: Record<string, any> = {
             Camera, Video, Heart, Film, Plane, MapPin, Sparkles, Compass
           };

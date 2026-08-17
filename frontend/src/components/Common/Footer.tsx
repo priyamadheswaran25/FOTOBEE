@@ -1,9 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { siteConfig } from "../../data/siteConfig";
+import { siteConfig as staticConfig } from "../../data/siteConfig";
 import { Heart, MapPin } from "lucide-react";
+import { api } from "../../services/api";
 
 export const Footer: React.FC = () => {
+  const [config, setConfig] = React.useState<any>(staticConfig);
+
+  React.useEffect(() => {
+    api.getConfig().then(res => {
+      if (res) setConfig(res);
+    });
+  }, []);
 
   return (
     <footer className="bg-stone-950 text-stone-300 pt-16 pb-8 border-t border-stone-800/80 relative paper-texture overflow-hidden">
@@ -28,16 +36,16 @@ export const Footer: React.FC = () => {
                 FOOTBEE <span className="text-amber-500">STUDIO</span>
               </span>
               <span className="text-[8px] tracking-[0.3em] text-stone-400 leading-none uppercase mt-1">
-                {siteConfig.logoSubtitle}
+                {config.logoSubtitle}
               </span>
             </div>
           </Link>
           <p className="font-serif italic text-stone-400 text-sm pt-2 max-w-xs">
-            “{siteConfig.tagline}”
+            “{config.tagline}”
           </p>
           <div className="flex space-x-4 pt-4">
             <a
-              href={siteConfig.socials.instagram}
+              href={config.socials.instagram}
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -50,7 +58,7 @@ export const Footer: React.FC = () => {
               </svg>
             </a>
             <a
-              href={siteConfig.socials.facebook}
+              href={config.socials.facebook}
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook"
@@ -61,7 +69,7 @@ export const Footer: React.FC = () => {
               </svg>
             </a>
             <a
-              href={siteConfig.socials.youtube}
+              href={config.socials.youtube}
               target="_blank"
               rel="noreferrer"
               aria-label="YouTube"
@@ -73,7 +81,7 @@ export const Footer: React.FC = () => {
               </svg>
             </a>
             <a
-              href={siteConfig.socials.googleBusiness}
+              href={config.socials.googleBusiness}
               target="_blank"
               rel="noreferrer"
               aria-label="Google Maps"
@@ -174,24 +182,24 @@ export const Footer: React.FC = () => {
           <ul className="space-y-3 text-sm text-stone-400 font-sans">
             <li className="flex items-start space-x-2">
               <MapPin className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-              <span>{siteConfig.address}</span>
+              <span>{config.address}</span>
             </li>
             <li className="text-xs tracking-widest">
               <span>EMAIL: </span>
               <a
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${config.email}`}
                 className="hover:text-amber-400 text-stone-200 transition-colors font-medium font-sans text-sm"
               >
-                {siteConfig.email}
+                {config.email}
               </a>
             </li>
             <li className="text-xs tracking-widest">
               <span>PHONE: </span>
               <a
-                href={`tel:${siteConfig.phone.replace(/\s+/g, '')}`}
+                href={`tel:${config.phone.replace(/\s+/g, '')}`}
                 className="hover:text-amber-400 text-stone-200 transition-colors font-medium font-sans text-sm"
               >
-                {siteConfig.phone}
+                {config.phone}
               </a>
             </li>
           </ul>
@@ -199,9 +207,9 @@ export const Footer: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-8 border-t border-stone-800/60 flex flex-col md:flex-row items-center justify-between text-xs text-stone-500 tracking-wider relative z-10">
-        <p className="mb-4 md:mb-0">{siteConfig.footerCopyright}</p>
+        <p className="mb-4 md:mb-0">{config.footerCopyright}</p>
         <p className="flex items-center space-x-1 font-serif italic text-sm text-stone-400">
-          <span>{siteConfig.footerHeartNote}</span>
+          <span>{config.footerHeartNote}</span>
           <Heart className="w-3 h-3 text-amber-500 fill-amber-500 ml-1" />
         </p>
       </div>

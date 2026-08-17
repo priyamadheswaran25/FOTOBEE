@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
-import { siteConfig } from "../data/siteConfig";
-import { services } from "../data/services";
-import { stories } from "../data/stories";
+import { siteConfig as staticConfig } from "../data/siteConfig";
 import { SectionHeading } from "../components/Common/SectionHeading";
 import { StoryCard } from "../components/Cards/StoryCard";
 import { ServiceCard } from "../components/Cards/ServiceCard";
@@ -137,14 +135,8 @@ const bubbles: BubbleConfig[] = [
 ];
 
 export const Home: React.FC = () => {
-  const [displayCategories, setDisplayCategories] = useState<any[]>([
-    { name: "WEDDINGS", image: "/arun-priya-hero.png" },
-    { name: "PRE-WEDDINGS", image: "/chettinad-hero.png" },
-    { name: "EVENTS", image: "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=600" },
-    { name: "PORTRAITS", image: "https://images.unsplash.com/photo-1595853035070-59a39fe84de3?q=80&w=600" },
-    { name: "RECEPTION", image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600" },
-    { name: "SANGEETH", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600" },
-  ]);
+  const [displayCategories, setDisplayCategories] = useState<any[]>([]);
+  const [config, setConfig] = useState<any>(staticConfig);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -164,18 +156,19 @@ export const Home: React.FC = () => {
     });
   };
 
-  const [displayServices, setDisplayServices] = useState<any[]>(services);
-  const [displayStories, setDisplayStories] = useState<any[]>(stories);
+  const [displayServices, setDisplayServices] = useState<any[]>([]);
+  const [displayStories, setDisplayStories] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadDynamicContent() {
       try {
-        const [catRes, srvRes, stRes] = await Promise.allSettled([
+        const [catRes, srvRes, stRes, configRes] = await Promise.allSettled([
           api.getCategories(),
           api.getServices(),
           api.getStories(),
+          api.getConfig()
         ]);
-        if (srvRes.status === 'fulfilled' && Array.isArray(srvRes.value) && srvRes.value.length > 0) {
+        if (srvRes.status === 'fulfilled' && Array.isArray(srvRes.value)) {
           const mappedServices = srvRes.value.map(s => ({
             ...s,
             title: s.name_en || s.title,
@@ -184,7 +177,7 @@ export const Home: React.FC = () => {
           }));
           setDisplayServices(mappedServices);
         }
-        if (stRes.status === 'fulfilled' && Array.isArray(stRes.value) && stRes.value.length > 0) {
+        if (stRes.status === 'fulfilled' && Array.isArray(stRes.value)) {
           const mappedStories = stRes.value.map(s => ({
             ...s,
             name: s?.name_en || s?.name || "Story",
@@ -196,7 +189,7 @@ export const Home: React.FC = () => {
           }));
           setDisplayStories(mappedStories);
         }
-        if (catRes.status === 'fulfilled' && Array.isArray(catRes.value) && catRes.value.length > 0) {
+        if (catRes.status === 'fulfilled' && Array.isArray(catRes.value)) {
           const mappedCategories = catRes.value.map((c: any) => ({
             ...c,
             name: c.name_en || c.name || "Portfolio",
@@ -204,8 +197,11 @@ export const Home: React.FC = () => {
           }));
           setDisplayCategories(mappedCategories);
         }
-      } catch {
-        // Fallback to static defaults
+        if (configRes.status === 'fulfilled' && configRes.value) {
+          setConfig(configRes.value);
+        }
+      } catch (err) {
+        console.error("Failed to load dynamic content", err);
       }
     }
     loadDynamicContent();
@@ -259,7 +255,7 @@ export const Home: React.FC = () => {
             transition={{ duration: 1 }}
             className="text-xs md:text-sm tracking-[0.4em] text-terracotta uppercase font-bold block mb-4"
           >
-            {siteConfig.name.toUpperCase()}
+            {config.name.toUpperCase()}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -412,7 +408,7 @@ export const Home: React.FC = () => {
           <SectionHeading title="Why Couples Choose Footbee" subtitle="Honesty in Frames" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 mt-12">
-            {siteConfig.whyChooseUs.map((item, idx) => (
+            {config.whyChooseUs.map((item: any, idx: number) => (
               <div key={idx} className="flex flex-col text-left border-l-2 border-terracotta pl-6 py-2">
                 <span className="font-serif text-xs text-terracotta tracking-[0.15em] font-semibold mb-2">
                   0{idx + 1}. {item.title}
@@ -435,7 +431,7 @@ export const Home: React.FC = () => {
               Seen Through Our Lens.
             </h2>
             <p className="text-xs tracking-widest text-mud/60 uppercase">
-              FOLLOW US <a href={siteConfig.socials.instagram} target="_blank" rel="noreferrer" className="text-terracotta font-semibold hover:underline">@FOOTBEE_PHOTOGRAPHY</a>
+              FOLLOW US <a href={config.socials.instagram} target="_blank" rel="noreferrer" className="text-terracotta font-semibold hover:underline">@FOOTBEE_PHOTOGRAPHY</a>
             </p>
             <div className="w-16 h-[1px] bg-mud/30 mx-auto mt-4" />
           </div>

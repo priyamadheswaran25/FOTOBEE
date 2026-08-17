@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { stories as staticStories } from "../data/stories";
 import { api } from "../services/api";
 
 export const Stories: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState("All Stories");
   const [sortOrder, setSortOrder] = useState("Latest First");
-  const [displayStories, setDisplayStories] = useState<any[]>(staticStories);
+  const [displayStories, setDisplayStories] = useState<any[]>([]);
   const [portfolios, setPortfolios] = useState<any[]>([]);
 
   useEffect(() => {
@@ -18,7 +17,7 @@ export const Stories: React.FC = () => {
           api.getPortfolios(),
         ]);
         
-        if (res.status === 'fulfilled' && Array.isArray(res.value) && res.value.length > 0) {
+        if (res.status === 'fulfilled' && Array.isArray(res.value)) {
           const mappedStories = res.value.map(s => ({
             ...s,
             name: s?.name_en || s?.name || "Story",
@@ -33,8 +32,8 @@ export const Stories: React.FC = () => {
         if (portRes.status === 'fulfilled' && Array.isArray(portRes.value)) {
           setPortfolios(portRes.value);
         }
-      } catch {
-        // Fallback
+      } catch (err) {
+        console.error("Failed to load stories", err);
       }
     }
     loadStories();

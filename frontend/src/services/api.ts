@@ -69,7 +69,31 @@ export const api = {
   getStories: () => apiFetch<any[]>('/stories'),
   getStoryBySlug: (slug: string) => apiFetch<any>(`/stories/${slug}`),
   getTestimonials: () => apiFetch<any[]>('/testimonials'),
-  getConfig: () => apiFetch<any>('/config'),
+  getConfig: async () => {
+    const res = await apiFetch<any>('/config').catch(() => null);
+    // Dynamically import static config to avoid circular dependencies if any
+    const { siteConfig: staticConfig } = await import('../data/siteConfig');
+    if (!res) return staticConfig;
+    
+    return {
+      ...staticConfig,
+      email: res.email || staticConfig.email,
+      phone: res.phone || staticConfig.phone,
+      whatsapp: {
+        ...staticConfig.whatsapp,
+        number: res.whatsapp_number || staticConfig.whatsapp.number,
+        prefilledMessage: res.whatsapp_message_en || staticConfig.whatsapp.prefilledMessage,
+      },
+      socials: {
+        ...staticConfig.socials,
+        instagram: res.instagram_url || staticConfig.socials.instagram,
+        facebook: res.facebook_url || staticConfig.socials.facebook,
+        youtube: res.youtube_url || staticConfig.socials.youtube,
+      },
+      address: res.address_en || staticConfig.address,
+      stats: (res.stats && res.stats.length > 0) ? res.stats : staticConfig.stats,
+    };
+  },
   submitInquiry: (data: any) => apiFetch<any>('/inquiries', { method: 'POST', body: JSON.stringify(data) }),
 
   // Admin Endpoints
